@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 import rospy
-import urllib
-import urllib2
 import rostopic
 import sys
+import socket
 
 
 
 
-def callback(data):
-    rospy.loginfo(str(data))
+def callback(data, args):
+    content = str(data)
+    rospy.loginfo(args)
+    
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.sendto(content, args)
+    
 
 
 
@@ -20,15 +24,15 @@ def listener(argv=None):
     rospy.logwarn("\n********* ITECH_ROS_IO **********\n")
     
     try:
-        topicName,msgClass = getArgs(argv)
+        topicName,msgClass,ip,port = getArgs(argv)
         if msgClass is None:
             rospy.logerr("Invalid Topic Name: "+topicName)
             return
     except IndexError as e:
-        rospy.logerr("Missing Arg: Please pass the name of topic")
+        rospy.logerr("Missing Arg: Please pass the name of topic, ip address and port")
         return
     
-    rospy.Subscriber(topicName, msgClass, callback)
+    rospy.Subscriber(topicName, msgClass, callback, (ip, int(port)))
     rospy.spin()
 #eof
 
@@ -41,11 +45,15 @@ def getArgs(argv=None):
         
     argv = rospy.myargv(argv)
     
+    rospy.loginfo(argv)
+    
     topicName = argv[1]
+    ip = argv[2]
+    port = argv[3]
     
     msgClass, realTopic, msgEval = rostopic.get_topic_class(topicName)
     
-    return topicName,msgClass
+    return topicName,msgClass,ip,port
 #eof
 
 
