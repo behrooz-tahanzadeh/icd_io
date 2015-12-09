@@ -17,5 +17,5 @@ catkin_make
 Usage
 -----
 ```bash
-rosrun itech_ros_io topic_io.py <topic name> <ip address> <server port>
+rosrun itech_ros_io topic_io.py <topic name> <ip address> <server port> <optional: minimum interval between messages in seconds>
 ```
