@@ -80,3 +80,28 @@ div#help>a
 {
 	color:blue;
 }
+
+div#app>div>h2
+{
+	padding:10px;
+	border-bottom:1px dashed #eee;
+	font-weight:normal;
+	font-style:italic;
+}
+
+div#app>div>input
+{
+	display:block;
+	margin:10px 10px;
+	padding:10px;
+	min-width:30%;
+	font-size:large;
+}
+
+div#app>div>h3
+{
+	background-color:#eee;
+	margin:10px;
+	padding:10px;
+	border-radius:10px;
+}

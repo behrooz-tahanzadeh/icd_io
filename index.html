@@ -2,7 +2,7 @@
 layout: default
 ---
 <!-- index.html -->
-<div ng-app="">
+<div ng-app="" id="app">
 	<div>
 		<h2>topic_io</h2>
 		<input ng-model="topicName" placeholder="topic name...">
@@ -10,7 +10,25 @@ layout: default
 		<input ng-model="port" placeholder="target port (ex: 8080)..." type="number">
 		<input ng-model="interval" placeholder="optional: minimum interval in seconds...">
 		
-		<h3 ng-bind="'rosrun itech_ros_io topic_io.py '+topicName+' '+ip+' '+port+' '+interval"></h3>
+		<h3 onclick="selectText(this)" ng-bind="'rosrun itech_ros_io topic_io.py '+topicName+' '+ip+' '+port+' '+interval"></h3>
 	</div>
 </div>
+
+<script type="text/javascript">
+    function selectText(containerid) 
+	{
+        if (document.selection)
+        {
+            var range = document.body.createTextRange();
+            range.moveToElementText(containerid);
+            range.select();
+        }
+        else if (window.getSelection)
+        {
+            var range = document.createRange();
+            range.selectNode(containerid);
+            window.getSelection().addRange(range);
+        }
+    }
+</script>
 <!-- index.html -->
