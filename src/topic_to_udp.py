@@ -36,7 +36,7 @@ def getArgs(argv=None):
 	
 	topicName = argv[1]
 	ip = argv[2]
-	port = argv[3]
+	port = int(argv[3])
 	
 	if 4<len(argv):
 		minInterval = float(argv[4])

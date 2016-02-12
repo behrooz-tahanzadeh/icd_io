@@ -24,6 +24,7 @@ class FromUdp:
 		while not rospy.is_shutdown():
 			data, addr = self.socket.recvfrom(1024)
 			self.stringPublisher.publish(str(data))
+			rospy.loginfo("from: "+str(addr)+"\ndata: "+str(data))
 	#eof
 	
 	

@@ -2,11 +2,14 @@ import rospy
 import rostopic
 from time import time
 from socket import socket, AF_INET, SOCK_DGRAM
+from geometry_msgs.msg._PoseStamped import PoseStamped
+from std_msgs.msg._String import String
+from app import util
+
 
 
 
 class ToUdp:
-	
 	
 	
 	def __init__(self, ip, port, topicName, minInterval = None):
@@ -23,6 +26,7 @@ class ToUdp:
 	
 	
 	
+	
 	def subscribe(self):
 		if(self.isValidTopicName()):
 			rospy.Subscriber(self.topicName, self.msgClass, self.callback)
@@ -33,9 +37,11 @@ class ToUdp:
 	
 	
 	
+	
 	def isValidTopicName(self):
 		return self.msgClass is not None
 	#eof
+	
 	
 	
 	
@@ -53,8 +59,25 @@ class ToUdp:
 				self.lastTimestamp = ts
 		#
 		
-		content = str(data)
+		content = self.parseData(data)
+		
 		self.socket.sendto(content, self.udpArgs)
+		rospy.loginfo("sent to: "+str(self.udpArgs))
 	#eof
 	
+	
+	
+	
+	def parseData(self, data):
+		if self.msgClass is PoseStamped:
+			m = util.markerTransformationMatrix(data).reshape(16)
+			
+			return ",".join(str(x) for x in m)
+			
+		elif self.msgClass is String:
+			return data.data
+		
+		else:
+			return str(data)
+	#eof
 #eoc

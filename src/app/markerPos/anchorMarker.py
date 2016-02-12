@@ -7,6 +7,7 @@ from app import util
 class AnchorMarker:
 	
 	
+	
 	def __init__(self, mid, p=[0,0,0], o=[0,0,0,1], determined=True, score=0):
 		self.id = mid
 		self.position = p
@@ -16,6 +17,15 @@ class AnchorMarker:
 		self.sampleNum = 0
 		
 		self.matrix = util.transformationMatrix(self.position, self.orientation)
+	#eof
+	
+	
+	
+	def getCameraMatrixByMarker(self, marker):
+		r = util.markerTransformationMatrix(marker)
+		r = inverse_matrix(r)
+		
+		return util.transformPoseByMatrix(r, self.matrix)
 	#eof
 	
 	
@@ -50,15 +60,6 @@ class AnchorMarker:
 	
 	
 	
-	def getCameraMatrixByMarker(self, marker):
-		r = util.markerTransformationMatrix(marker)
-		r = inverse_matrix(r)
-		
-		return util.transformPoseByMatrix(self.matrix, r)
-	#eof
-	
-	
-	
 	def resetMarkerByCameraMatrixAndTransMarker(self, cameraMatrix, transMarker):
 		transMatrix = util.markerTransformationMatrix(transMarker)
 		newMat = util.transformPoseByMatrix(cameraMatrix, transMatrix)
@@ -70,6 +71,9 @@ class AnchorMarker:
 		
 		return self
 	#eof
+	
+	def getPose(self):
+		return util.matrixToPose(self.matrix)
 	
 	
 #eoc
