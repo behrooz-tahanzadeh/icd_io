@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import rospy
 from app import util
-from app.markerPos.anchorMarker import AnchorMarker
-from app.markerPos.poseController import PoseController
+from app.markerPose.anchorMarker import AnchorMarker
+from app.markerPose.poseController import PoseController
 
 
 
@@ -21,9 +21,9 @@ def main(argv=None):
 			}
 	
 	try:
-		rospy.init_node('itech_marker_pos', anonymous=True)
+		rospy.init_node('itech_marker_pose', anonymous=True)
 		
-		util.logBeginningInfo("marker_pos")
+		util.logBeginningInfo("marker_pose")
 	
 		PoseController(anchors)
 		rospy.spin()

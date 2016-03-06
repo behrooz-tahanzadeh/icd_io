@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import rospy, sys
+import rospy
 from app import util
 from app.udpIO.toUdp import ToUdp
 
@@ -11,38 +11,45 @@ def main(argv=None):
 	util.logBeginningInfo('topic_to_udp')
 	
 	try:
-		args = getArgs(argv)
+		args = getArgs()
+		
 		toUdp = ToUdp(args[0], args[1], args[2], args[3])
 		
 		if(toUdp.subscribe()):
 			rospy.spin()
 		else:
-			rospy.logerr("Invalid Topic Name")
-		
-	except IndexError:
-		rospy.logerr("Missing Arg: pass ip address and port")
+			rospy.logwarn("Topic ["+args[2]+"] does not appear to be published yet.")
+	
+	except ValueError as e:
+		rospy.logerr(e.message)
 		return
 #eof
 
 
 
 
-def getArgs(argv=None):
+def getArgs():
+	topicName = rospy.get_param('~topic', None)
+	ip = rospy.get_param('~ip', None)
+	port = rospy.get_param('~port', None)
+	minInterval = rospy.get_param('~int', None)
 	
-	if argv is None:
-		argv=sys.argv
+	if topicName is None:
+		raise ValueError("Missong Arg: Topic name")
 	
-	argv = rospy.myargv(argv)
+	if ip is None:
+		raise ValueError("Missing Arg: IP address")
 	
-	topicName = argv[1]
-	ip = argv[2]
-	port = int(argv[3])
-	
-	if 4<len(argv):
-		minInterval = float(argv[4])
+	if port is None:
+		port = 8080
+		rospy.logwarn("Default port: 8080")
 	else:
-		minInterval = None
+		port = int(port)
 	
+	
+	if minInterval is not None:
+		minInterval = float(minInterval)
+		
 	return ip, port, topicName, minInterval
 #eof
 

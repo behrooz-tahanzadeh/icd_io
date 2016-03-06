@@ -5,7 +5,7 @@ from app import util
 from std_msgs.msg import Header
 import numpy
 from geometry_msgs.msg._PoseArray import PoseArray
-from app.markerPos.poseCorrection import poseCorrection
+from app.markerPose.poseCorrection import poseCorrection
 
 
 
@@ -124,4 +124,5 @@ class PoseController:
 		m = util.markerTransformationMatrix(marker)
 		i = numpy.identity(4)
 		return not numpy.allclose(m, i)
+	#eof
 #eoc

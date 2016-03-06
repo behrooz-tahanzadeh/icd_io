@@ -4,6 +4,7 @@ from time import time
 from socket import socket, AF_INET, SOCK_DGRAM
 from geometry_msgs.msg._PoseStamped import PoseStamped
 from std_msgs.msg._String import String
+from mavros_msgs.msg import State
 from app import util
 
 
@@ -21,7 +22,7 @@ class ToUdp:
 		self.lastTimeStamp = None
 		
 		self.topicName = topicName
-		self.msgClass = rostopic.get_topic_class(self.topicName)[0]
+		self.msgClass = rostopic.get_topic_class(self.topicName, True)[0]
 	#eof
 	
 	
@@ -71,11 +72,14 @@ class ToUdp:
 	def parseData(self, data):
 		if self.msgClass is PoseStamped:
 			m = util.markerTransformationMatrix(data).reshape(16)
-			
 			return ",".join(str(x) for x in m)
 			
 		elif self.msgClass is String:
 			return data.data
+		
+		elif self.msgClass is State:
+			m = [data.connected,data.armed,data.mode]
+			return ",".join(str(x) for x in m)
 		
 		else:
 			return str(data)

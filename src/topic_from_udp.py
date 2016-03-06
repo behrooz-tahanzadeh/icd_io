@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import rospy, sys
+import rospy
 from app import util
 from app.udpIO.fromUdp import FromUdp
 
@@ -12,7 +12,7 @@ def main(argv=None):
 	
 	
 	try:
-		ip,port = getArgs(argv)
+		ip,port = getArgs()
 		
 		fromUdp = FromUdp(ip, port)
 		
@@ -21,24 +21,29 @@ def main(argv=None):
 		except:
 			fromUdp.kill()
 		
-	except IndexError:
-		rospy.logerr("Missing Arg: pass ip address and port")
+	except ValueError as e:
+		rospy.logerr(e.message)
 		return
 #eof
 
 
 
 
-def getArgs(argv=None):
-	if argv is None:
-		argv=sys.argv
+def getArgs():
+	ip = rospy.get_param('~ip', None)
+	port = rospy.get_param('~port', None)
 	
-	argv = rospy.myargv(argv)
+	if ip is None:
+		ip=""
+		rospy.logwarn("Listening to all of the recieved data")
 	
-	ip = argv[1]
-	port = argv[2]
+	if port is None:
+		port = 8080
+		rospy.logwarn("Default port: 8080")
+	else:
+		port = int(port)
 	
-	return ip,int(port)
+	return ip,port
 #eof
 
 
