@@ -1,0 +1,5 @@
+<nav class="layout">
+{% for section in site.data.sections %}
+	<a href='#{{section.title}}'>{{section.title}}</a>
+{% endfor %}
+</nav>

@@ -12,13 +12,6 @@ a
 }
 a:hover{color:red;}
 
-canvas#drawingArea
-{
-	position:fixed;
-	top:0px;
-	left:0px;
-}
-
 div#info
 {
 	position:fixed;
@@ -43,65 +36,61 @@ div#info>div.contact
 	float:right;
 }
 
-div#pp
+div#app
 {
-	position:fixed;
-	bottom:30px;
-	left:10px;
-	width:50px;
-	text-align:center;
-	background-color:#111;
-	color:white;
-	font-size: small;
-	padding:5px;
-	border-radius:5px;
-	cursor:pointer;
+	margin-left:230px;
+	padding-bottom:50px;
 }
 
-input#tail
+div#app>section
 {
-	position:fixed;
-	bottom:30px;
-	left:80px;
-	width:200px;
-}
-
-div#help
-{
-	position:fixed;
-	font-size:x-large;
-	top:50%;
-	left:50%;
-	width:500px;
-	transform:translateX(-250px);
-	text-align:center;
-}
-div#help>a
-{
-	color:blue;
-}
-
-div#app>div>h2
-{
+	margin:10px 0px 40px;
 	padding:10px;
+	border:1px solid #eee;
+}
+
+div#app>section>h2
+{
+	padding:10px 0px;
 	border-bottom:1px dashed #eee;
 	font-weight:normal;
 	font-style:italic;
 }
 
-div#app>div>input
+div#app>section>input
 {
 	display:block;
-	margin:10px 10px;
+	margin:10px 0px;
 	padding:10px;
 	min-width:30%;
 	font-size:large;
 }
 
-div#app>div>h3
+div#app>section>h3
 {
 	background-color:#eee;
-	margin:10px;
+	margin:10px 0px;
 	padding:10px;
 	border-radius:10px;
+}
+
+nav.layout
+{
+	position:fixed;
+	background-color:#333;
+	left:0px;
+	top:0px;
+	height:100%;
+	width:200px;
+	padding-top:40px;
+}
+nav.layout>a
+{
+	display:block;
+	padding:5px 10px;
+}
+
+nav.layout>a:target
+{
+	color:white;
 }

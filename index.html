@@ -2,33 +2,105 @@
 layout: default
 ---
 <!-- index.html -->
-<div ng-app="" id="app">
-	<div>
-		<h2>topic_io</h2>
-		<input ng-model="topicName" placeholder="topic name...">
-		<input ng-model="ip" placeholder="target ip (ex: 192.168.0.100)...">
-		<input ng-model="port" placeholder="target port (ex: 8080)..." type="number">
-		<input ng-model="interval" placeholder="optional: minimum interval in seconds...">
+<div id="app">
+
+
+	<section id="marker_pose">
+		<h2>marker_pose</h2>
+		No Argument
 		
-		<h3 onclick="selectText(this)" ng-bind="'rosrun itech_ros_io topic_io.py '+topicName+' '+ip+' '+port+' '+interval"></h3>
-	</div>
+		<h3 onclick="selectText(this)">rosrun itech_ros_io marker_pos.py</h3>
+	</section>
+
+	
+	<section id="mavros_offboard">
+		<h2>mavros_offboard</h2>
+		No Argument
+		
+		<h3 onclick="selectText(this)">rosrun itech_ros_io mavros_offboard.py</h3>
+	</section>
+	
+	
+	<section ng-app="TopicToUdpApp" ng-controller="TopicToUdpController" id="topic_to_udp">
+		<h2>topic_to_udp</h2>
+		<input ng-model="topic" placeholder="topic name">
+		<input ng-model="ip" placeholder="target ip (ex: 192.168.0.100)">
+		<input ng-model="port" placeholder="target port (Default: 8080)" type="number">
+		<input ng-model="interval" placeholder="minimum interval in seconds (Default :0)">
+		
+		<h3 onclick="selectText(this)" ng-bind="getResult()"></h3>
+		
+		<script>
+		angular.module('TopicToUdpApp', []).controller('TopicToUdpController', function($scope)
+		{
+			$scope.getResult = function()
+			{
+				var o ="rosrun itech_ros_io topic_to_udp.py ";
+				
+				if($scope.topic)
+					o+="_topic:=\""+$scope.topic+"\" ";
+				
+				if($scope.ip)
+					o+="_ip:=\""+$scope.ip+"\" ";
+				
+				if($scope.port)
+					o+="_port:=\""+$scope.port+"\" ";
+				
+				if($scope.interval)
+					o+="_int:=\""+$scope.interval+"\" ";
+				
+				return o;
+			};
+		});
+		</script>
+	</section>
+	
+
+	<section ng-app="TopicFromUdpApp" ng-controller="TopicFromUdpController" id="topic_from_udp">
+		<h2>topic_from_udp</h2>
+		<input ng-model="ip" placeholder="target ip (Default: Listening to all of the incoming messages)">
+		<input ng-model="port" placeholder="target port (Default: 8080)" type="number">
+		
+		<h3 onclick="selectText(this)" ng-bind="getResult()"></h3>
+		
+		<script>
+		angular.module('TopicFromUdpApp', []).controller('TopicFromUdpController', function($scope)
+		{
+			$scope.getResult = function()
+			{
+				var o ="rosrun itech_ros_io topic_from_udp.py ";
+				
+				if($scope.ip)
+					o+="_ip:=\""+$scope.ip+"\" ";
+				
+				if($scope.port)
+					o+="_port:=\""+$scope.port+"\" ";
+				
+				return o;
+			};
+		});
+		
+		angular.bootstrap(document.getElementById("topic_from_udp"),['TopicFromUdpApp']);
+		</script>
+	</section>
+	
 </div>
 
 <script type="text/javascript">
-    function selectText(containerid) 
+function selectText(containerid) 
+{
+	if (document.selection)
 	{
-        if (document.selection)
-        {
-            var range = document.body.createTextRange();
-            range.moveToElementText(containerid);
-            range.select();
-        }
-        else if (window.getSelection)
-        {
-            var range = document.createRange();
-            range.selectNode(containerid);
-            window.getSelection().addRange(range);
-        }
-    }
+		var range = document.body.createTextRange();
+		range.moveToElementText(containerid);
+		range.select();
+	}
+	else if (window.getSelection)
+	{
+		var range = document.createRange();
+		range.selectNode(containerid);
+		window.getSelection().addRange(range);
+	}
+}
 </script>
 <!-- index.html -->
