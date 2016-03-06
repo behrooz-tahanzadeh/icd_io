@@ -11,6 +11,8 @@ def main(argv=None):
 	dx = 2
 	dy = -2
 	
+	#TODO: adding dynamic marker defenition mechanism
+	
 	anchors ={ 
 			35 : AnchorMarker(35, [dx+0,	dy+0,		0], [0,0,0,1]),
 			31 : AnchorMarker(31, [dx+0.75,	dy+0.50,	0], [0,0,0,1]),
