@@ -19,7 +19,6 @@ class FromUdp:
 	
 	
 	
-	
 	def run(self):
 		while not rospy.is_shutdown():
 			data, addr = self.socket.recvfrom(1024)
@@ -31,5 +30,5 @@ class FromUdp:
 	
 	def kill(self):
 		self.socket.close()
-	
+	#eof
 #eoc
