@@ -26,7 +26,8 @@ def main(argv=None):
 		rospy.init_node('itech_marker_pose', anonymous=True)
 		
 		util.logBeginningInfo("marker_pose")
-	
+		
+		
 		PoseController(anchors)
 		rospy.spin()
 	except:
