@@ -16,6 +16,4 @@ catkin_make
 
 Usage
 -----
-```bash
-rosrun itech_ros_io topic_io.py <topic name> <ip address> <server port> <optional: minimum interval between messages in seconds>
-```
+To generate run commands you can visit [this page](http://behrooz-tahanzadeh.github.io/itech_ros_io/). You can just enter the arguments and then copy/paste prepared command into terminal.
