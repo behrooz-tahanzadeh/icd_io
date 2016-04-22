@@ -1,11 +1,9 @@
 import rospy
 from geometry_msgs.msg._PoseStamped import PoseStamped
-from geometry_msgs.msg import Pose
 from std_msgs.msg import Header
 from geometry_msgs.msg._TwistStamped import TwistStamped
-from geometry_msgs.msg._Twist import Twist
-from std_msgs.msg import String
-import math
+from app.mavrosOffboard.mavModel import MavModel
+from app import util
 
 
 
@@ -13,95 +11,63 @@ import math
 class MavController():
 	
 	def __init__(self):
-		self.setPointPublisher = rospy.Publisher('mavros/setpoint_position/local', PoseStamped, queue_size=10)
-		self.setVelocityPublisher = rospy.Publisher("mavros/setpoint_velocity/cmd_vel", TwistStamped, queue_size=10)
+		self.cmdVelPublisher = rospy.Publisher("mavros/setpoint_velocity/cmd_vel", TwistStamped, queue_size=10)
+		self.destInPosePublisher = rospy.Publisher(util.topicName("mavros_offboard", "dest_in_pose"), PoseStamped, queue_size=10)
+		self.PoseNorthDecPublisher = rospy.Publisher(util.topicName("mavros_offboard", "north_dec"), PoseStamped, queue_size=10)
 		
-		rospy.Subscriber("/itech_ros/topic_from_udp/data", String, self.callback)
 		
-		self.twist = Twist()
+		rospy.Subscriber("/itech_ros/marker_pose/pose_corrected", PoseStamped, self.poseCb)
+		rospy.Subscriber(util.topicName("mavros_offboard", "set_destination"), PoseStamped, self.destinationCb)
+		rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.mavPoseCb)
 		
-		self.twist.angular.x = 0
-		self.twist.angular.y = 0
-		self.twist.angular.z = 0
-		
-		self.twist.linear.x = 0
-		self.twist.linear.y = 0
-		self.twist.linear.z = 0
-		
-		self.pose = Pose()
+		self.model = MavModel(0.3)
 	#eof
 	
+	
+	
+	def publishNorthDec(self):
+		header = Header(0, rospy.rostime.get_rostime(), "world")
+		self.PoseNorthDecPublisher.publish(PoseStamped(header, self.model.poseNorthDec))
+	#eof
 	
 	
 	
 	def publish(self):
 		self.publishVelocity()
-	#eof
+		self.publishDestInPose()
+		self.publishNorthDec()
+	#eof	
 	
 	
 	
-	
-	def publishPoint(self):
+	def publishDestInPose(self):
 		header = Header(0, rospy.rostime.get_rostime(), "world")
-	
-		self.setPointPublisher.publish(PoseStamped(header, self.pose))
+		self.destInPosePublisher.publish(PoseStamped(header, self.model.destInPose))
 	#eof
-	
 	
 	
 	
 	def publishVelocity(self):
 		header = Header(0, rospy.rostime.get_rostime(), "world")
-		
-		self.setVelocityPublisher.publish(TwistStamped(header, self.twist))
-	#eof		
-	
-	
-	
-	
-	def callback(self, data):
-		vArr = data.data.split(',')
-		
-		self.twist.linear.x = self.limitVelocity(vArr[0])
-		self.twist.linear.y = self.limitVelocity(vArr[1])
-		self.twist.linear.z = self.limitVelocity(vArr[2])
-		
-		self.pose.position.x = self.limitPosition(vArr[0])
-		self.pose.position.y = self.limitPosition(vArr[1])
-		self.pose.position.z = self.limitPosition(vArr[2])
+		self.cmdVelPublisher.publish(TwistStamped(header, self.model.cmdVel))
 	#eof
 	
 	
 	
-		
-	def limitVelocity(self, number):
-		try:
-			number = float(number)
-				
-			if(math.fabs(number)>0.3):
-				if(number < 0):
-					return -0.3
-				else:
-					return 0.3
-			else:
-				return number
-		except:
-			rospy.logwarn("Invalid string")
+	def poseCb(self, data):
+		self.model.pose = data.pose
 	#eof
 	
 	
 	
-		
-	def limitPosition(self, number):
-		number = float(number)
-			
-		if(math.fabs(number)>1.5):
-			if(number < 0):
-				return -1.5
-			else:
-				return 1.5
-		else:
-			return number
+	def destinationCb(self, data):
+		self.model.dest = data.pose
+	#eof
+	
+	
+	
+	def mavPoseCb(self, data):
+		self.model.mavPose = data.pose
 	#eof
 	
 #eoc

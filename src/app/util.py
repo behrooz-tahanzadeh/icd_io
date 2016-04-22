@@ -16,6 +16,13 @@ def transformationMatrix(translation, orientation):
 #eof
 
 
+def poseToMatrix(pose):
+	q = pose.orientation
+	t = pose.position
+	
+	return transformationMatrix([t.x, t.y, t.z], [q.x, q.y, q.z, q.w])
+#eof
+
 
 def markerTransformationMatrix(marker):
 	q = marker.pose.orientation

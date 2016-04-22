@@ -6,6 +6,8 @@ from std_msgs.msg import Header
 import numpy
 from geometry_msgs.msg._PoseArray import PoseArray
 from app.markerPose.poseCorrection import poseCorrection
+from std_msgs.msg import String
+from math import pi
 
 
 
@@ -24,15 +26,17 @@ class PoseController:
 	
 	
 	
-	def __init__(self, anchors):
+	def __init__(self, anchors, northDec):
 		
 		self.anchors = anchors
+		self.northDec = northDec*(pi/180)
 		
-		self.poseStampedPublisher = rospy.Publisher(util.topicName("marker_pos", "pose"), PoseStamped, queue_size=10)
-		self.poseCorrectedStampedPublisher = rospy.Publisher(util.topicName("marker_pos", "pose_corrected"), PoseStamped, queue_size=10)
-		#mavros/vision_pose/pose
+		self.poseStampedPublisher = rospy.Publisher(util.topicName("marker_pose", "pose"), PoseStamped, queue_size=10)
+		self.poseCorrectedPublisher = rospy.Publisher(util.topicName("marker_pose", "pose_corrected"), PoseStamped, queue_size=10)
+		self.poseCorrectedStringPublisher = rospy.Publisher(util.topicName("marker_pose", "pose_corrected/str"), String, queue_size=10)
+		self.poseNorthDecPublisher = rospy.Publisher(util.topicName("marker_pose", "pose_northdec"), PoseStamped, queue_size=10)
 		
-		self.markerArrayPublisher = rospy.Publisher(util.topicName("marker_pos", "markers"), PoseArray, queue_size=10)
+		self.markerArrayPublisher = rospy.Publisher(util.topicName("marker_pose", "markers"), PoseArray, queue_size=10)
 		
 		rospy.Subscriber("/camera/apriltags_marker", MarkerArray, self.markerCb)
 		
@@ -87,13 +91,17 @@ class PoseController:
 	
 	
 	
+	
 	def publishPoseCorrected(self):
 		if self.cameraMatrix is not None:
 			header = Header(0, rospy.rostime.get_rostime(), "world")
 			cm = self.poseCorrection.run(self.cameraMatrix)
 			pose = util.matrixToPose(cm)
-			self.poseCorrectedStampedPublisher.publish(PoseStamped(header, pose))
+			
+			self.poseCorrectedPublisher.publish(PoseStamped(header, pose))
+			self.poseCorrectedStringPublisher.publish(",".join(str(x) for x in cm.reshape(16)))
 	#eof
+	
 	
 	
 	
