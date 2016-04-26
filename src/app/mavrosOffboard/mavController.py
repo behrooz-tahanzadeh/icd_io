@@ -17,10 +17,19 @@ class MavController():
 		
 		
 		rospy.Subscriber("/itech_ros/marker_pose/pose_corrected", PoseStamped, self.poseCb)
-		rospy.Subscriber(util.topicName("mavros_offboard", "set_destination"), PoseStamped, self.destinationCb)
+		#rospy.Subscriber(util.topicName("mavros_offboard", "set_destination"), PoseStamped, self.destinationCb)
 		rospy.Subscriber("/mavros/local_position/pose", PoseStamped, self.mavPoseCb)
 		
+		
+		
 		self.model = MavModel(0.3)
+		
+		p = PoseStamped()
+		p.pose.position.x = 2.45
+		p.pose.position.y = -2
+		p.pose.position.z = 1.50
+		
+		self.model.dest = p.pose
 	#eof
 	
 	

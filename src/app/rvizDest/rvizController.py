@@ -15,7 +15,7 @@ class RvizController:
 	
 	
 	def __init__(self):
-		self.posePublisher = rospy.Publisher(util.topicName("rviz_dest", "pose"), PoseStamped, queue_size=10)
+		#self.posePublisher = rospy.Publisher(util.topicName("rviz_dest", "pose"), PoseStamped, queue_size=10)
 		#self.targetPublisher = rospy.Publisher(util.topicName("rviz_dest", "target"), PoseStamped, queue_size=10)
 		
 		#self.posePublisher = rospy.Publisher("/itech_ros/marker_pose/pose_corrected", PoseStamped, queue_size=10)
@@ -23,7 +23,7 @@ class RvizController:
 		
 		self.server = InteractiveMarkerServer("rviz_dest")
 		
-		self.createNorthDecPln()
+		#self.createNorthDecPln()
 		self.createTargetPln()
 	#eof
 	
@@ -80,8 +80,9 @@ class RvizController:
 	
 	
 	def poseCb(self,feedback):
-		header = Header(0, rospy.rostime.get_rostime(), "world")
-		self.posePublisher.publish(PoseStamped(header, feedback.pose))
+		pass
+		#header = Header(0, rospy.rostime.get_rostime(), "world")
+		#self.posePublisher.publish(PoseStamped(header, feedback.pose))
 	#eof
 	
 	

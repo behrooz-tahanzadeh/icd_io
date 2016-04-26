@@ -15,12 +15,12 @@ def main(argv=None):
 	#TODO: adding dynamic marker defenition mechanism
 	
 	anchors ={ 
-			30 : AnchorMarker(30, [dx+0.45,	dy+0,		0], [0,0,0,1]),
-			31 : AnchorMarker(31, [dx+0.90,	dy+0,		0], [0,0,0,1]),
-			32 : AnchorMarker(32, [dx+1.35,	dy+0,		0], [0,0,0,1]),
-			33 : AnchorMarker(33, [dx+1.80,	dy+0,		0], [0,0,0,1]),
-			34 : AnchorMarker(34, [dx+2.25,	dy+0,		0], [0,0,0,1]),
-			35 : AnchorMarker(35, [dx+2.70,	dy+0,		0], [0,0,0,1]),
+			30 : AnchorMarker(30, [dx+0.45,	dy+0.0,	0], [0,0,0,1]),
+			31 : AnchorMarker(31, [dx+0.90,	dy+0.0,	0], [0,0,0,1]),
+			32 : AnchorMarker(32, [dx+1.35,	dy+0.0,	0], [0,0,0,1]),
+			33 : AnchorMarker(33, [dx+1.80,	dy+0.0,	0], [0,0,0,1]),
+			34 : AnchorMarker(34, [dx+2.25,	dy+0.0,	0], [0,0,0,1]),
+			35 : AnchorMarker(35, [dx+2.70,	dy+0.0,	0], [0,0,0,1]),
 			}
 	
 	try:

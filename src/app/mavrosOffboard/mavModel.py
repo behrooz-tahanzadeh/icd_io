@@ -6,6 +6,8 @@ from math import sqrt
 from geometry_msgs.msg._Pose import Pose
 from geometry_msgs.msg._Point import Point
 from geometry_msgs.msg._Quaternion import Quaternion
+import math
+import rospy
 
 
 
@@ -58,7 +60,7 @@ class MavModel(object):
 	def dest(self, dest):
 		self.destMat = util.poseToMatrix(dest)
 		
-		self.runCalculation()
+		rospy.loginfo(dest)
 	#eof
 	
 	
@@ -84,8 +86,6 @@ class MavModel(object):
 	def mavPose(self, pose):
 		self.mavPoseMat = util.poseToMatrix(pose)
 		self.mavPoseDec = euler_from_matrix(self.mavPoseMat, 'szyx')[0]
-		
-		self.runCalculation()
 	#eof
 	
 	
@@ -112,9 +112,14 @@ class MavModel(object):
 			l =  sqrt(x**2 + y**2 + z**2)
 			
 			if(l>0):
-				self.twist.linear.x = (x/l)*self.maxSpeed
-				self.twist.linear.y = (y/l)*self.maxSpeed
-				self.twist.linear.z = (z/l)*self.maxSpeed
+				if(l>self.maxSpeed):
+					self.twist.linear.x = (x/l)*self.maxSpeed
+					self.twist.linear.y = (y/l)*self.maxSpeed
+					self.twist.linear.z = (z/l)*self.maxSpeed
+				else:
+					self.twist.linear.x = x
+					self.twist.linear.y = y
+					self.twist.linear.z = z
 			else:
 				self.resetVel()
 		else:
@@ -131,6 +136,7 @@ class MavModel(object):
 	
 	
 	def calNorthPose(self):
+		
 		qm = rotation_matrix(self.poseDec-self.mavPoseDec, (0,0,1))
 		q = quaternion_from_matrix(qm)
 		t = translation_from_matrix(self.poseMat)

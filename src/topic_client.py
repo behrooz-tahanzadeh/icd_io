@@ -2,6 +2,8 @@
 import rospy
 from std_srvs.srv._Trigger import Trigger
 
+
+
 def add_two_ints_client():
     rospy.wait_for_service('itech_topic_list')
     try:
@@ -12,4 +14,4 @@ def add_two_ints_client():
         print "Service call failed: %s"%e
         
 if __name__ == "__main__":
-    print add_two_ints_client() 
+    print add_two_ints_client()
