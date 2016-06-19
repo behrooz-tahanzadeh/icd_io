@@ -5,9 +5,7 @@ from app import util
 from std_msgs.msg import Header
 import numpy
 from geometry_msgs.msg._PoseArray import PoseArray
-from app.markerPose.poseCorrection import poseCorrection
-from std_msgs.msg import String
-from math import pi
+from app.core.model.poseModel import PoseModel
 
 
 
@@ -19,30 +17,24 @@ class PoseController:
 	:subscribe:
 		/camera/apriltags_marker
 	:publish:
-		marker_pos/pos
-		marker_pos/markers
+		marker_pose/pose
+		marker_pose/markers
 	"""
 	
 	
 	
 	
-	def __init__(self, anchors, northDec):
-		
+	def __init__(self, anchors):
 		self.anchors = anchors
-		self.northDec = northDec*(pi/180)
 		
 		self.poseStampedPublisher = rospy.Publisher(util.topicName("marker_pose", "pose"), PoseStamped, queue_size=10)
-		self.poseCorrectedPublisher = rospy.Publisher(util.topicName("marker_pose", "pose_corrected"), PoseStamped, queue_size=10)
-		self.poseCorrectedStringPublisher = rospy.Publisher(util.topicName("marker_pose", "pose_corrected/str"), String, queue_size=10)
-		self.poseNorthDecPublisher = rospy.Publisher(util.topicName("marker_pose", "pose_northdec"), PoseStamped, queue_size=10)
-		
 		self.markerArrayPublisher = rospy.Publisher(util.topicName("marker_pose", "markers"), PoseArray, queue_size=10)
+		self.poseSepPublisher = rospy.Publisher(util.topicName("marker_pose", "pose_sep"), PoseArray, queue_size=10)
 		
-		rospy.Subscriber("/camera/apriltags_marker", MarkerArray, self.markerCb)
+		rospy.Subscriber("cam2/camera/apriltags_marker", MarkerArray, self.markerCb)
 		
-		self.cameraMatrix = None
-		
-		self.poseCorrection = poseCorrection().rotate180AroundX().rotate90AroundZ()
+		self.cameraPose = PoseModel()
+		self.poses = []
 	#eof
 	
 	
@@ -56,8 +48,8 @@ class PoseController:
 	
 	
 	def calPosition(self, markerArray):
-		
 		matrices = []
+		poses = []
 		
 		for marker in markerArray:
 			
@@ -67,6 +59,8 @@ class PoseController:
 					anchor = self.anchors.get(marker.id)
 					mat = anchor.getCameraMatrixByMarker(marker)
 					matrices.append(mat)
+					
+					poses.append(PoseModel(mat).getPose())
 				else:
 					rospy.logwarn("Invalid Marker. id: "+str(marker.id))
 			else:
@@ -74,7 +68,8 @@ class PoseController:
 		#eo for
 		
 		if len(matrices)>0:
-			self.cameraMatrix = sum(matrices)/len(matrices)
+			self.cameraPose.setMatrix(sum(matrices)/len(matrices))
+			self.poses = poses
 			return True
 		else:
 			return False
@@ -85,31 +80,17 @@ class PoseController:
 	
 	def publish(self):
 		self.publishPose()
-		self.publishPoseCorrected()
 		self.publishMarkers()
 	#eof
 	
 	
 	
 	
-	def publishPoseCorrected(self):
-		if self.cameraMatrix is not None:
-			header = Header(0, rospy.rostime.get_rostime(), "world")
-			cm = self.poseCorrection.run(self.cameraMatrix)
-			pose = util.matrixToPose(cm)
-			
-			self.poseCorrectedPublisher.publish(PoseStamped(header, pose))
-			self.poseCorrectedStringPublisher.publish(",".join(str(x) for x in cm.reshape(16)))
-	#eof
-	
-	
-	
-	
 	def publishPose(self):
-		if self.cameraMatrix is not None:
+		if self.cameraPose is not None:
+			self.poseStampedPublisher.publish(self.cameraPose.getPoseStamped())
 			header = Header(0, rospy.rostime.get_rostime(), "world")
-			pose = util.matrixToPose(self.cameraMatrix)
-			self.poseStampedPublisher.publish(PoseStamped(header, pose))
+			self.poseSepPublisher.publish(PoseArray(header, self.poses))
 	#eof
 	
 	
@@ -121,7 +102,7 @@ class PoseController:
 		header = Header(0, rospy.rostime.get_rostime(), "world")
 		
 		for a in self.anchors:
-			poseArr.append(self.anchors[a].getPose())
+			poseArr.append(self.anchors[a].pose.getPose())
 		
 		self.markerArrayPublisher.publish(PoseArray(header, poseArr))
 	#eof

@@ -23,7 +23,7 @@ class MavState:
 	
 	def waitForFCUConnection(self):
 	
-		rospy.loginfo("Waiting for FCU connection...")
+		rospy.logwarn("Waiting for FCU connection...")
 	
 		while(not rospy.is_shutdown()):
 			if(self.isConnected()):

@@ -61,3 +61,10 @@ def topicName(pkgName, topicName):
 
 def logBeginningInfo(pkgName):
 	print "======= itech_ros / "+pkgName+" ======="
+#eof
+
+
+
+
+def getStampedTime(obj):
+	return obj.header.stamp.secs + (obj.header.stamp.nsecs/1000000000.0)

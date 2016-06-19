@@ -1,55 +1,52 @@
 #!/usr/bin/env python
 import rospy
 from app import util
-from app.markerPose.anchorMarker import AnchorMarker
-from app.markerPose.poseController import PoseController
-from __builtin__ import int
+from app.node.markerPose.anchorMarker import AnchorMarker
+from app.node.markerPose.poseController import PoseController
 
 
 
 
 def main(argv=None):
-	dx = 2
-	dy = -2
+	rospy.init_node('itech_marker_pose', anonymous=True)
+	util.logBeginningInfo("marker_pose")
 	
-	#TODO: adding dynamic marker defenition mechanism
-	
-	anchors ={ 
-			30 : AnchorMarker(30, [dx+0.45,	dy+0.0,	0], [0,0,0,1]),
-			31 : AnchorMarker(31, [dx+0.90,	dy+0.0,	0], [0,0,0,1]),
-			32 : AnchorMarker(32, [dx+1.35,	dy+0.0,	0], [0,0,0,1]),
-			33 : AnchorMarker(33, [dx+1.80,	dy+0.0,	0], [0,0,0,1]),
-			34 : AnchorMarker(34, [dx+2.25,	dy+0.0,	0], [0,0,0,1]),
-			35 : AnchorMarker(35, [dx+2.70,	dy+0.0,	0], [0,0,0,1]),
-			}
 	
 	try:
-		rospy.init_node('itech_marker_pose', anonymous=True)
-		
-		util.logBeginningInfo("marker_pose")
-		
-		args = getArgs()
-		
-		PoseController(anchors, args)
-		rospy.spin()
-	except:
-		rospy.logfatal("run ros before running this package")
+		anchors = getArgs()
+	except ValueError as e:
+		rospy.logfatal(e.message)
+		anchors = None
 	
+	
+	if anchors is not None:
+		try:
+			PoseController(anchors)
+			rospy.spin()
+		except:
+			rospy.logfatal("Node has been terminated.")
 #eof
 
 
 
 
 def getArgs():
-	northDeclination = rospy.get_param('~northdec', None)
+	tags = rospy.get_param('~tags', None)
 	
-	if northDeclination is None:
-		northDeclination = 0
-		rospy.logwarn("North Declination: 0 ")
+	if(tags is None):
+		raise ValueError("No tag has been defined!")
 	else:
-		northDeclination = int(northDeclination)
-	
-	return northDeclination
+		try:
+			tags = eval(str(tags))
+			anchors = {}
+			
+			for key in tags.keys():
+				value = tags[key]
+				anchors[key] = AnchorMarker(key, value[0], value[1])
+				
+			return anchors
+		except:
+			raise ValueError("Invalid tag description file")
 #eof
 
 
